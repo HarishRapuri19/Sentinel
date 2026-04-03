@@ -41,11 +41,40 @@ Project-Sentinel/
 ├── requirements.txt        # Python dependencies
 ├── .env.example            # Environment variable template
 └── .gitignore              # Security: Prevents .env from being committed
-🛠️ Local Setup & Installation1. Clone the RepositoryBashgit clone [https://github.com/your-username/Project-Sentinel.git](https://github.com/your-username/Project-Sentinel.git)
+
+🛠️ Local Setup & Installation
+1. Clone the Repository
+
+git clone [https://github.com/your-username/Project-Sentinel.git](https://github.com/your-username/Project-Sentinel.git)
 cd Project-Sentinel
-2. Environment ConfigurationCreate a .env file in the root directory. Never commit this file.Bash# Example .env content
+
+2. Environment Configuration
+Create a .env file in the root directory. Never commit this file.
+# Example .env content
 GROQ_API_KEY=your_key_here
-3. Install DependenciesBashpip install -r requirements.txt
-4. Run the ApplicationBashstreamlit run src/app.py
-🌐 Deployment to Streamlit CloudPush your code to GitHub (ensure .env is ignored via .gitignore).Connect your repo to Streamlit Community Cloud.Add your GROQ_API_KEY to the Secrets section in the Streamlit Cloud dashboard.Set the main file path to src/app.py.📈 
-Implementation MetricsMetricComplexityFeasibilityConfidence ScoreTelemetry ParserMediumHigh95%ROI CalculatorLowHigh100%AI RefactoringMediumHigh92%Developed by: Harish RapuriRole: Senior Software Engineer | AI FinOps Specialist
+
+3. Install Dependencies
+
+pip install -r requirements.txt
+
+4. Run the Application
+
+streamlit run src/app.py
+
+🌐 Deployment to Streamlit Cloud
+Push your code to GitHub (ensure .env is ignored via .gitignore).
+
+Connect your repo to Streamlit Community Cloud.
+
+Add your GROQ_API_KEY to the Secrets section in the Streamlit Cloud dashboard.
+
+Set the main file path to src/app.py.
+
+Metric,Complexity,Feasibility,Confidence Score
+Telemetry Parser,Medium,High,95%
+ROI Calculator,Low,High,100%
+AI Refactoring,Medium,High,92%
+
+Developed by: Harish Rapuri
+
+Role: Senior Software Engineer | AI FinOps Specialist
