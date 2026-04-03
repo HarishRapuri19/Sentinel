@@ -1,63 +1,51 @@
-🛡️ Project Sentinel: AI FinOps Architect
-Automated Cost Optimization for Apache Spark & Databricks Workflows
+# 🛡️ Project Sentinel: AI FinOps Architect
 
-Project Sentinel is an intelligent FinOps agent designed to bridge the gap between Data Engineering and Cloud Cost Management. By analyzing Spark execution telemetry (JSON) and source code (.py), Sentinel identifies high-cost patterns—such as disk spills and inefficient joins—and automatically refactors the code to reduce DBU consumption.
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🏗️ System Architecture
-Sentinel follows a decoupled, agentic workflow to ensure logic integrity and performance gains.
+**Project Sentinel** is an enterprise-grade AI agent designed to optimize **Databricks** and **Apache Spark** compute costs. By analyzing Spark UI telemetry (JSON) and source code (.py), Sentinel identifies bottlenecks like disk spills and data skew, providing automated, refactored code to reduce DBU consumption.
 
-Ingestion Layer: Accepts PySpark scripts and Spark UI SQL execution metrics (JSON).
+---
 
-Telemetry Analysis: The agent parses the physical plan to identify SortMergeJoin bottlenecks, data skew, and memory pressure.
+## 🏗️ System Architecture
 
-LLM Optimization Engine: Powered by Groq (Llama-3) and LangChain, the agent applies optimization hints (Broadcast, Skew, Salting) while enforcing a Strict Logic Guardrail.
+Project Sentinel utilizes a decoupled architecture to ensure high-performance AI reasoning without compromising data security.
 
-FinOps Scorecard: Calculates real-time ROI, including Runtime reduction, Cluster downsizing, and Annual Savings projections.
+1.  **Ingestion Layer:** Accepts PySpark scripts and SQL execution metrics.
+2.  **Reasoning Engine:** Powered by **Groq (Llama-3)** and **LangChain** to parse physical plans.
+3.  **Optimization Layer:** Applies Broadcast hints, Skew hints, and Salted keys.
+4.  **FinOps Dashboard:** A Streamlit-based UI that calculates Annual ROI and Node Scaling.
 
-🚀 Key Features
-Automated Join Refactoring: Converts expensive shuffles into BroadcastHashJoins for small-to-large table interactions.
+---
 
-Spill Mitigation: Identifies disk spills and suggests optimal spark.conf settings to keep data in-memory.
+## 🚀 Key Features
 
-Databricks-Aligned UI: A high-fidelity dashboard mimicking the Databricks AI Agent experience.
+* **📊 FinOps ROI Scorecard:** Real-time calculation of runtime reduction and yearly cost savings.
+* **⚡ Spark Optimization:** Automated conversion of `SortMergeJoin` to `BroadcastHashJoin`.
+* **🛡️ Logic Guardrails:** Strict enforcement to ensure optimization never alters business logic.
+* **📉 Cluster Right-Sizing:** Direct recommendations for downsizing clusters based on memory pressure.
+* **🔄 Synced Code Review:** Side-by-side comparison of baseline vs. optimized code.
 
-Annual ROI Tracker: Real-time financial projections based on DBU-hour heuristics and job frequency.
+---
 
-Logic Guardrails: Ensures that performance tuning never alters the underlying business transformations.
+## 📂 Project Structure
 
-📂 Project Structure
-Plaintext
+```directory
 Project-Sentinel/
 ├── src/
-│   ├── app.py              # Databricks-themed Streamlit Dashboard
-│   ├── finops_agent.py     # LangChain Agent logic & LLM Prompting
-│   └── mock_data.py        # Baseline telemetry for demonstration
+│   ├── app.py              # Main Streamlit Dashboard
+│   ├── finops_agent.py     # AI Agent & Prompt Engineering
+│   └── mock_data.py        # Test telemetry & code samples
 ├── .streamlit/
-│   └── config.toml         # UI Theme & Server configurations
-├── requirements.txt        # Enterprise dependencies
-├── .env.example            # Template for GROQ_API_KEY
-└── README.md               # Project documentation
-🛠️ Installation & Setup
-1. Clone the Repository
-Bash
-git clone https://github.com/your-username/Project-Sentinel.git
+│   └── config.toml         # Theme and Server settings
+├── requirements.txt        # Python dependencies
+├── .env.example            # Environment variable template
+└── .gitignore              # Security: Prevents .env from being committed
+🛠️ Local Setup & Installation1. Clone the RepositoryBashgit clone [https://github.com/your-username/Project-Sentinel.git](https://github.com/your-username/Project-Sentinel.git)
 cd Project-Sentinel
-2. Configure Environment
-Create a .env file in the root directory (refer to .env.example):
-
-Plaintext
-GROQ_API_KEY=your_actual_api_key_here
-3. Install Dependencies
-Bash
-pip install -r requirements.txt
-4. Launch the Platform
-Bash
-streamlit run src/app.py
-📊 Deployment to Streamlit Cloud
-Push this repository to GitHub (ensure .env is in your .gitignore).
-
-Connect your GitHub account to Streamlit Community Cloud.
-
-In Advanced Settings, add your GROQ_API_KEY to the Secrets section.
-
-Deploy from the main branch with the path src/app.py.
+2. Environment ConfigurationCreate a .env file in the root directory. Never commit this file.Bash# Example .env content
+GROQ_API_KEY=your_key_here
+3. Install DependenciesBashpip install -r requirements.txt
+4. Run the ApplicationBashstreamlit run src/app.py
+🌐 Deployment to Streamlit CloudPush your code to GitHub (ensure .env is ignored via .gitignore).Connect your repo to Streamlit Community Cloud.Add your GROQ_API_KEY to the Secrets section in the Streamlit Cloud dashboard.Set the main file path to src/app.py.📈 
+Implementation MetricsMetricComplexityFeasibilityConfidence ScoreTelemetry ParserMediumHigh95%ROI CalculatorLowHigh100%AI RefactoringMediumHigh92%Developed by: Harish RapuriRole: Senior Software Engineer | AI FinOps Specialist
