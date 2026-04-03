@@ -1,0 +1,115 @@
+Phase 1 TRD & LLD: The FinOps Core
+Document Status: Approved for Implementation
+Target Environment: Local VS Code -> Databricks Community Edition
+
+1. System Interfaces & Data Contracts
+Before writing execution logic, the exact inputs and outputs must be typed and validated.
+
+Input 1: Target Script (BAD_PYSPARK_CODE)
+
+Type: Raw String.
+
+Constraint: Must be isolated PySpark functions or discrete execution blocks. Cannot exceed 200 lines to prevent context degradation.
+
+Input 2: Telemetry (SPARK_EXECUTION_METRICS)
+
+Type: JSON / Python Dictionary.
+
+Required Keys: shuffle_read_bytes (int), spill_to_disk_bytes (int), physical_plan_bottleneck (str).
+
+Output: Optimized Code Payload
+
+Type: String containing only valid Python code.
+
+Constraint: Must be wrapped in ```python markdown blocks for reliable regex extraction.
+
+2. Component-Level Design (LLD)
+The system will not be a massive procedural script. It will be an Object-Oriented pipeline located entirely within src/finops_agent.py.
+
+A. Configuration Module (src/config.py)
+Responsibility: Securely load and validate environment variables.
+
+Design:
+
+Use dotenv.load_dotenv().
+
+Hard Failure Rule: If os.getenv("GROQ_API_KEY") is None or empty, the application must immediately raise a ValueError and terminate. Do not allow the script to execute and hit a blind API error.
+
+B. Core Execution Class (src/finops_agent.py)
+Class Name: FinOpsOptimizer
+
+Dependencies: langchain_groq.ChatGroq, langchain_core.prompts.ChatPromptTemplate, langchain_core.output_parsers.StrOutputParser.
+
+Method Specification:
+__init__(self, temperature=0.0)
+
+Initializes the ChatGroq client using the llama-3.1-8b-instant model.
+
+Architect Note: Temperature must be strictly 0.0. We want deterministic, repeatable code generation, not creative hallucinations.
+
+_build_prompt(self) -> ChatPromptTemplate
+
+Constructs the dual-message architecture (System Message + Human Message).
+
+_extract_code(self, raw_llm_output: str) -> str
+
+A deterministic regex or string manipulation function that strips all conversational text (e.g., "Here is your optimized code:") and extracts only the text between the ```python and ``` tags.
+
+optimize_pipeline(self, code: str, metrics: dict) -> str
+
+The main orchestrator. Invokes the LangChain pipeline: prompt | llm | parser.
+
+Passes the output to _extract_code().
+
+Returns the final, clean PySpark script.
+
+3. Prompt Architecture (The Guardrails)
+The LLM is a chaotic engine. The System Prompt is the steering wheel. It must be brutally restrictive.
+
+System Message Design:
+
+Plaintext
+You are an Elite Databricks FinOps Architect. Your job is to rewrite inefficient PySpark code to eliminate data spills and network shuffle bottlenecks.
+
+STRICT CONSTRAINTS:
+1. You must use the PySpark DataFrame API. NEVER use RDDs. NEVER use Pandas unless explicitly utilizing Pandas UDFs.
+2. The final DataFrame schema must remain identical to the input script. Do not drop or rename columns unless instructed.
+3. You must add inline comments explaining exactly WHICH optimization technique you applied and WHY, referencing the provided metrics.
+4. OUTPUT FORMAT: You must return ONLY the raw Python code wrapped in ```python tags. Do not output any conversational text, pleasantries, or explanations outside of the code block.
+Human Message Design:
+
+Plaintext
+Please optimize the following PySpark script based on the execution metrics provided.
+
+SPARK EXECUTION METRICS:
+{metrics}
+
+UNOPTIMIZED PYSPARK CODE:
+{code}
+4. Failure Modes & Exception Handling
+A production script anticipates failure. finops_agent.py must handle the following scenarios gracefully:
+
+Failure Mode 1: API Rate Limiting (HTTP 429)
+
+Handling: Groq free tiers have strict requests-per-minute (RPM) limits. Wrap the optimize_pipeline execution in a basic try/except block catching standard API errors and outputting a clean "Rate limit reached, please wait" message rather than a massive stack trace.
+
+Failure Mode 2: Hallucinated Output Format
+
+Handling: If the _extract_code method cannot find the ```python block in the LLM's response, it must raise a custom ParsingError. It should output the raw LLM string to the console for debugging so we can patch the prompt.
+
+Failure Mode 3: Missing Metrics
+
+Handling: If the metrics dictionary is passed without the spill_to_disk_bytes key, the script should warn the user that optimization will be degraded due to missing telemetry.
+
+5. Execution Workflow (Step-by-Step)
+When this block is complete, the physical execution loop will look exactly like this:
+
+Run python src/finops_agent.py in the VS Code terminal.
+
+The script imports BAD_PYSPARK_CODE and SPARK_EXECUTION_METRICS from mock_data.py.
+
+It passes them to FinOpsOptimizer.optimize_pipeline().
+
+The script prints the extracted, optimized code to the terminal.
+
+You copy the output, paste it into a Databricks Community Edition notebook, and verify it runs without throwing syntax errors.

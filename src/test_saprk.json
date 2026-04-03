@@ -1,0 +1,46 @@
+{
+  "project_metadata": {
+    "app_name": "Sentinel_Test_Case",
+    "timestamp": "2026-04-03T23:45:00Z",
+    "system_ram_limit": "16GB"
+  },
+  "static_analysis": {
+    "physical_plan_nodes": [
+      {
+        "id": "node_01",
+        "type": "SortMergeJoin",
+        "strategy": "Wide Dependency (Shuffle)",
+        "keys": ["Store_ID"],
+        "issue": "MISSING_BROADCAST_HINT",
+        "severity": "MEDIUM"
+      },
+      {
+        "id": "node_02",
+        "type": "CrossJoin",
+        "issue": "CARTESIAN_PRODUCT_RISK",
+        "severity": "CRITICAL"
+      }
+    ],
+    "security_scan": {
+      "pii_detected": [
+        {"column": "Manager_Name", "entity": "PERSON", "confidence": 0.98},
+        {"column": "Contact_Phone", "entity": "PHONE_NUMBER", "confidence": 1.0}
+      ]
+    }
+  },
+  "runtime_metrics": {
+    "stage_id": 101,
+    "total_tasks": 200,
+    "skew_metrics": {
+      "max_task_duration_sec": 320,
+      "avg_task_duration_sec": 8,
+      "skew_ratio": "40.0x",
+      "straggler_partition_id": 99
+    },
+    "resource_usage": {
+      "executor_memory_spill_bytes": 2147483648,
+      "disk_spill_bytes": 536870912,
+      "status": "MEMORY_PRESSURE_WARNING"
+    }
+  }
+}

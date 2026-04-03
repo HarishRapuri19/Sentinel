@@ -1,0 +1,3 @@
+.\sentinel_env\Scripts\activate
+pip install -r requirements.txt
+python src/finops_agent.py

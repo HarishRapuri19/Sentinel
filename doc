@@ -1,0 +1,81 @@
+🛡️ Project Sentinel: Autonomous Databricks DataOps Copilot
+Document Type: Architectural Draft & Execution Roadmap
+Target Environment: Databricks / Apache Spark / Azure
+
+1. Project Overview & Value Proposition
+The Problem: Data engineering pipelines are frequently deployed with unoptimized Spark configurations (causing massive compute bloat) and unvetted data schemas (causing PII/compliance leaks). Human review of every pipeline is a bottleneck that slows down business intelligence.
+The Solution: Sentinel is a multi-agent, "Human-in-the-Loop" orchestration system. It acts as an automated gatekeeper that intercepts PySpark code before production deployment.
+The Core Capabilities:
+
+FinOps Optimization: Ingests Spark execution metrics to rewrite inefficient code (e.g., adding broadcast joins, fixing data skew, optimizing partitions).
+
+Compliance & Redaction: Dynamically injects Machine Learning UDFs (User Defined Functions) to scrub PII from data streams natively within the Spark cluster.
+
+ChatOps Integration: Communicates entirely via enterprise messaging (Slack/Teams), opening Pull Requests for human approval rather than executing destructive changes directly.
+
+2. System Architecture (The "How")
+Sentinel is built on a decoupled, 100% open-source foundation to ensure data privacy and cloud-agnostic deployment.
+
+Layer 1: The Orchestration Brain
+Framework: LangGraph (State Machine for cyclic, multi-agent reasoning).
+
+LLM Engine: Llama-3.1 (8B or 70B) hosted locally via vLLM or accessed via Groq for prototyping.
+
+State Management: PostgreSQL or local JSON stores to track pipeline review history and token usage.
+
+Layer 2: The Diagnostic Tools (Agent Weapons)
+FinOps Parser: A Python module that queries the Spark History Server REST API. It extracts Directed Acyclic Graph (DAG) metrics, memory spill logs, and execution times, passing only the compressed JSON metadata to the LLM to avoid context-window limits.
+
+Security Engine: Microsoft Presidio (or Spark NLP). An open-source NLP library wrapped in a PySpark UDF to perform distributed, row-level PII detection (SSNs, names, credit cards) without relying on API calls to an LLM.
+
+Layer 3: The CI/CD Interface
+Version Control: GitHub/GitLab REST API integration to push optimized .py or .ipynb files to a new branch and generate a Pull Request.
+
+User Interface: Slack API / Microsoft Teams Bot for conversational pipeline submission and review alerts.
+
+3. Execution Roadmap
+To prevent scope creep, the project is divided into four strictly isolated phases. Each phase results in a functional, standalone portfolio piece that eventually merges into the final Sentinel system.
+
+Phase 1: The FinOps Core (Weeks 1 - 3)
+Goal: Build a script where an LLM successfully rewrites bad Spark code.
+
+Deliverables:
+
+Set up a local testing environment or Databricks Community cluster.
+
+Write a Python script to extract and parse Spark execution plans via REST API.
+
+Develop a strict system prompt that forces the LLM to output only valid PySpark DataFrame API code based on the injected Spark metrics.
+
+Phase 2: The Security UDF Integration (Weeks 4 - 6)
+Goal: Prove the ability to embed standard ML models inside big data pipelines.
+
+Deliverables:
+
+Deploy Microsoft Presidio locally.
+
+Write a PySpark script that applies Presidio via a Pandas UDF across a multi-gigabyte dataframe to mask sensitive entities.
+
+Benchmark the memory usage to ensure it scales across worker nodes without crashing.
+
+Phase 3: Agentic Orchestration (Weeks 7 - 9)
+Goal: Build the "Brain" that decides which tool to use.
+
+Deliverables:
+
+Initialize the LangGraph State Machine.
+
+Create a Router Node that evaluates incoming code and routes it to the "Optimization Node," the "Security Node," or both.
+
+Implement an "Error Checking Node" that catches syntax errors in the LLM-generated code before finalizing the output.
+
+Phase 4: Interface & Deployment (Weeks 10 - 12)
+Goal: Make the system usable by business stakeholders.
+
+Deliverables:
+
+Wrap the LangGraph backend in a FastAPI endpoint.
+
+Connect the endpoint to a Slack Bot.
+
+Implement the GitHub API script to automatically generate Pull Requests with the optimized code and an AI-generated summary of compute savings.
